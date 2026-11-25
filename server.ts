@@ -24,6 +24,11 @@ const GITHUB_STORE_REPO = process.env.GITHUB_STORE_REPO?.trim() || "";
 const GITHUB_STORE_BRANCH = process.env.GITHUB_STORE_BRANCH?.trim() || "data-store";
 const GITHUB_STORE_PATH = process.env.GITHUB_STORE_PATH?.trim() || "secure-store.json";
 
+// LINE OA Messaging API notification. Set both values to enable push alerts.
+// LINE_NOTIFY_TO accepts one or more comma-separated user/group/room IDs.
+const LINE_CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN?.trim() || "";
+const LINE_NOTIFY_TO = process.env.LINE_NOTIFY_TO?.trim() || "";
+
 type DurableStore = {
   trialRegistrations?: Array<{
     full_name: string;
@@ -314,6 +319,47 @@ function adminPasswordOk(provided: unknown): boolean {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
+function lineTargets(): string[] {
+  return LINE_NOTIFY_TO.split(",")
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .slice(0, 5);
+}
+
+async function sendLineNotify(text: string): Promise<void> {
+  if (!LINE_CHANNEL_ACCESS_TOKEN) return;
+  const targets = lineTargets();
+  if (targets.length === 0) return;
+  const message = { type: "text", text: text.slice(0, 5000) };
+  await Promise.all(
+    targets.map(async (to) => {
+      try {
+        const res = await fetch("https://api.line.me/v2/bot/message/push", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`,
+          },
+          body: JSON.stringify({ to, messages: [message] }),
+        });
+        if (!res.ok) {
+          console.error("LINE notify failed:", res.status, (await res.text()).slice(0, 300));
+        }
+      } catch (err) {
+        console.error("LINE notify error:", err);
+      }
+    })
+  );
+}
+
+function bangkokNow(): string {
+  return new Date().toLocaleString("th-TH", {
+    timeZone: "Asia/Bangkok",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
 async function startServer() {
   const app = express();
   const httpServer = http.createServer(app);
@@ -387,6 +433,15 @@ async function startServer() {
         const list = Array.isArray(next.trialRegistrations) ? next.trialRegistrations : [];
         next.trialRegistrations = [...list, { full_name: fullName, email, phone, ip, device_id: deviceId, createdAt: Date.now() }];
       });
+      void sendLineNotify(
+        `🆕 มีคนลงทะเบียนทดลอง PlodNee Planner\n` +
+          `ชื่อ: ${fullName}\n` +
+          `อีเมล: ${email}\n` +
+          `เบอร์: ${phone}\n` +
+          `Device: ${deviceId}\n` +
+          `IP: ${ip}\n` +
+          `เวลา: ${bangkokNow()}`
+      );
 
       const now = Date.now();
       const payload: LicensePayload = {
@@ -427,6 +482,13 @@ async function startServer() {
       return;
     }
     activationFailures.delete(ip);
+    void sendLineNotify(
+      `🔓 มีคน activate license PlodNee Planner\n` +
+        `Device: ${deviceId}\n` +
+        `โค้ด: ${String(body?.code || "")}\n` +
+        `จำนวนวัน: ${parsed.days}\n` +
+        `เวลา: ${bangkokNow()}`
+    );
     const now = Date.now();
     const existing = body?.token ? verifyLicenseToken(body.token, secret) : null;
     const base = existing && existing.kind === "license" && existing.expiresAt > now ? existing.expiresAt : now;
@@ -488,6 +550,11 @@ async function startServer() {
       const list = Array.isArray(store.feedbacks) ? store.feedbacks : [];
       store.feedbacks = [...list, { id, text, createdAt: Date.now(), ...(deviceId ? { deviceId } : {}) }].slice(-500);
     });
+    void sendLineNotify(
+      `💬 Feedback PlodNee Planner\n${text}\n` +
+        (deviceId ? `Device: ${deviceId}\n` : "") +
+        `เวลา: ${bangkokNow()}`
+    );
     res.json({ ok: true, id });
   });
 
@@ -530,6 +597,7 @@ async function startServer() {
       licenseConfigured: Boolean(getLicenseSecret()),
       adminConfigured: Boolean(process.env.ADMIN_SECRET?.trim()),
       durableStore: Boolean(GITHUB_STORE_TOKEN && GITHUB_STORE_REPO),
+      lineNotifyConfigured: Boolean(LINE_CHANNEL_ACCESS_TOKEN && lineTargets().length),
     });
   });
 

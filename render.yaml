@@ -22,3 +22,7 @@ services:
         sync: false
       - key: GITHUB_STORE_REPO
         sync: false
+      - key: LINE_CHANNEL_ACCESS_TOKEN
+        sync: false
+      - key: LINE_NOTIFY_TO
+        sync: false

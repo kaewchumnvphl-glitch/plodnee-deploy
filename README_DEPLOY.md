@@ -26,6 +26,17 @@
 
 แนะนำให้ตั้ง `GITHUB_STORE_TOKEN` + `GITHUB_STORE_REPO` บน Render เพื่อเก็บข้อมูลลง branch `data-store` (Render ไม่ auto-deploy branch นี้) ถ้าไม่ตั้ง ข้อมูลจะอยู่ใน `.plodnee-data/` และหายตอน restart
 
+### แจ้งเตือนเข้า LINE OA (ไม่บังคับ)
+
+ตั้ง 2 ตัวแปรนี้บน Render เพื่อให้แจ้งทันทีเมื่อมีคนลงทะเบียน / activate license / ส่ง feedback:
+
+| ตัวแปร | ค่า |
+|---|---|
+| `LINE_CHANNEL_ACCESS_TOKEN` | Channel access token (v3) ของ LINE OA |
+| `LINE_NOTIFY_TO` | LINE user ID / group ID / room ID ที่จะรับแจ้ง (คั่นด้วย `,` ได้สูงสุด 5 IDs) |
+
+ถ้าไม่ตั้งค่าทั้ง 2 ตัว แอปจะทำงานปกติ แต่ไม่ส่งแจ้งเตือน (เช็คได้ที่ `/api/health` → `lineNotifyConfigured`)
+
 ## 2. ทดสอบในเครื่อง
 
 ```powershell
