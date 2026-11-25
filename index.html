@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PlodNee Planner — วางแผนปลดหนี้และคำนวณดอกเบี้ย</title>
+    <meta
+      name="description"
+      content="แอปวางแผนปลดหนี้ จำแนกรายรับ-หนี้สินทุกช่องทาง คำนวณกลยุทธ์โปะหนี้ให้หมดไวที่สุด แจ้งเตือนครบกำหนดชำระ และเครื่องคำนวณดอกเบี้ยครบวงจร"
+    />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0f766e" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="PlodNee" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js").catch(() => {});
+        });
+      }
+    </script>
+    <meta property="og:title" content="PlodNee Planner — วางแผนปลดหนี้และคำนวณดอกเบี้ย" />
+    <meta
+      property="og:description"
+      content="แอปวางแผนปลดหนี้ จำแนกรายรับ-หนี้สินทุกช่องทาง คำนวณกลยุทธ์โปะหนี้ให้หมดไวที่สุด แจ้งเตือนครบกำหนดชำระ และเครื่องคำนวณดอกเบี้ยครบวงจร"
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

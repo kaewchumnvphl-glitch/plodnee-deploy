@@ -1,0 +1,6 @@
+{
+  "name": "PlodNee Planner — วางแผนปลดหนี้",
+  "description": "แอปวางแผนปลดหนี้ จำแนกรายรับ-หนี้สินทุกช่องทาง คำนวณกลยุทธ์โปะหนี้ให้หมดไวที่สุด แจ้งเตือนครบกำหนดชำระ และเครื่องคำนวณดอกเบี้ยครบวงจร",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

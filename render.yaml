@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: plodnee-planner
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install --no-audit --no-fund --legacy-peer-deps && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: LICENSE_SECRET
+        sync: false
+      - key: ADMIN_SECRET
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: GITHUB_STORE_TOKEN
+        sync: false
+      - key: GITHUB_STORE_REPO
+        sync: false
